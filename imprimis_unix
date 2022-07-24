@@ -53,6 +53,12 @@ fi
 if [ -x ${IMPRIMIS_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ]
 then
   cd ${IMPRIMIS_DATA}
+  pwd
+  printenv
+  ls -lh
+  ls -lh media
+  ls -lh media/interface
+  sha256sum media/interface/logo_1024.png
   exec ${IMPRIMIS_BIN}/${SYSTEM_NAME}${MACHINE_NAME}client ${IMPRIMIS_OPTIONS} "$@"
 else
   echo "Your platform does not have a pre-compiled Imprimis client."

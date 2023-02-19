@@ -13,6 +13,7 @@ jobs:
       with:
         repository: project-imprimis/org.imprimis.Imprimis.flatpak
         submodules: true
+        ref: test
 
     - name: Flatpak builder cache
       id: cache-flatpak

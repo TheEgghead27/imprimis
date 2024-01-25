@@ -6,6 +6,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:freedesktop-23.08
+      options: --privileged
 
     steps:
     - name: Checkout flatpak build templates
@@ -14,42 +17,12 @@ jobs:
         repository: project-imprimis/org.imprimis.Imprimis.flatpak
         submodules: true
 
-    - name: Flatpak builder cache
-      id: cache-flatpak
-      uses: actions/cache@v3
-      env:
-        cache-name: cache-flatpak
-      with:
-        path: .flatpak-builder
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/org.imprimis.Imprimis.json') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-
-    - name: Update package list
-      run: sudo apt-get update
-
-    - name: Install flatpak
-      run: sudo apt-get install flatpak flatpak-builder
-
-    - name: Add Flathub repository
-      run: sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-      
-    - name: Install flatpak SDK/dependencies
-      run: sudo flatpak install --assumeyes flathub org.freedesktop.Platform/x86_64/23.08 org.freedesktop.Sdk/x86_64/23.08 org.freedesktop.Platform.GL.default/x86_64/23.08
-
-    - name: Configure git
-      run: git config --global protocol.file.allow always
-
     - name: Build flatpak
-      run: flatpak-builder --repo=local build-dir org.imprimis.Imprimis.json
-      
-    - name: Bundle flatpak
-      run: flatpak build-bundle ./local imprimis.flatpak org.imprimis.Imprimis
-    
-    - name: Upload build artifact
-      uses: actions/upload-artifact@v4
+      uses: flatpak/flatpak-github-actions/flatpak-builder@v6
       with:
-        name: imprimis-flatpak
-        path: ./imprimis.flatpak
+        bundle: imprimis.flatpak
+        manifest-path: org.imprimis.Imprimis.json
+        cache-key: flatpak-builder-${{ github.sha }}
+
+    - name: Debug information
+      run: ls *
